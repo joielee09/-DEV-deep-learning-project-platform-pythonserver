@@ -169,6 +169,7 @@ imshow(out, title=[class_names[x] for x in classes])
 
 """* 학습할 CNN 딥러닝 모델 객체를 초기화합니다."""
 
+print("학습할 CNN 딥러닝 모델 객체를 초기화합니다")
 model = models.resnet34(pretrained=True)
 num_features = model.fc.in_features
 # 전이 학습(transfer learning): 모델의 출력 뉴런 수를 3개로 교체하여 마지막 레이어 다시 학습
@@ -179,13 +180,14 @@ criterion = nn.CrossEntropyLoss()
 optimizer = optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
 
 """* 학습을 진행합니다."""
-
-num_epochs = 50
+print("학습을 진행합니다.")
+num_epochs = 1
 model.train()
 start_time = time.time()
 
 # 전체 반복(epoch) 수 만큼 반복하며
 for epoch in range(num_epochs):
+    print("epoch:",epoch)
     running_loss = 0.
     running_corrects = 0
 
@@ -211,7 +213,8 @@ for epoch in range(num_epochs):
     epoch_acc = running_corrects / len(train_datasets) * 100.
 
     # 학습 과정 중에 결과 출력
-    print('#{} Loss: {:.4f} Acc: {:.4f}% Time: {:.4f}s'.format(epoch, epoch_loss, epoch_acc, time.time() - start_time))
+    print("epoch:", epoch)
+    print("epoch loss: ", epoch_loss)
 
 """* 학습된 모델을 평가합니다."""
 
@@ -234,24 +237,28 @@ with torch.no_grad():
         running_corrects += torch.sum(preds == labels.data)
 
         # 한 배치의 첫 번째 이미지에 대하여 결과 시각화
-        print(f'[예측 결과: {class_names[preds[0]]}] (실제 정답: {class_names[labels.data[0]]})')
+        # print(f'[예측 결과: {class_names[preds[0]]}] (실제 정답: {class_names[labels.data[0]]})')
+        print("예측", class_names[preds[0]], "정답",class_names[labels.data[0]])
         imshow(inputs.cpu().data[0], title='예측 결과: ' + class_names[preds[0]])
 
     epoch_loss = running_loss / len(test_datasets)
     epoch_acc = running_corrects / len(test_datasets) * 100.
-    print('[Test Phase] Loss: {:.4f} Acc: {:.4f}% Time: {:.4f}s'.format(epoch_loss, epoch_acc, time.time() - start_time))
+    # print('[Test Phase] Loss: {:.4f} Acc: {:.4f}% Time: {:.4f}s'.format(epoch_loss, epoch_acc, time.time() - start_time))
+    print(epoch_loss, epoch_acc)
 
 """#### <b>3. 분류 모델 API 개발</b>
 
 * 학습된 분류 모델을 다른 사람이 사용할 수 있도록 API를 개발하여 배포합니다.
 * 먼저 한 장의 이미지를 파일로부터 읽어와 분류 결과를 반환하는 기능을 작성합니다.
 """
+print("분류 모델 API 개발")
 
 # 테스트용 이미지 다운로드하기
 import wget
-url = "https://upload.wikimedia.org/wikipedia/commons/f/f1/Don_Lee_by_Gage_Skidmore.jpg -O test_image.jpg"
-wget.download(url)
+url = "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/Don_Lee_by_Gage_Skidmore.jpg/643px-Don_Lee_by_Gage_Skidmore.jpg"
+wget.download(url,'./test_image.jpg')
 
+print("from pil import image")
 from PIL import Image
 
 
@@ -266,8 +273,7 @@ with torch.no_grad():
 """* 웹 API 개방을 위해 <b>Ngrok</b> 서비스를 이용합니다.
 * API 기능 제공을 위해 <b>Flask 프레임워크</b>를 사용합니다.
 """
-
-# 필요한 라이브러리 설치하기
+print("flask-ngrok 필요한 라이브러리 설치하기")
 # !pip install flask-ngrok
 
 # ! pip install flask-cors
@@ -277,11 +283,12 @@ from flask_ngrok import run_with_ngrok
 from flask import Flask, jsonify, request
 # from flask_cors import CORS
 from flask_cors import CORS
-
+print("필요한 라이브러리 설치하기")
 app = Flask(__name__)
 CORS(app)
 
 # 이미지를 읽어 결과를 반환하는 함수
+print("이미지를 읽어 결과를 반환하는 함수")
 def get_prediction(image_bytes):
     
     image = Image.open(io.BytesIO(image_bytes))
@@ -296,7 +303,7 @@ def get_prediction(image_bytes):
     return class_names[preds[0]]
 
 
-@app.route('/', methods=['GET','POST'])
+@app.route('/', methods=['POST'])
 def predict():
     print("started predicting", request)
     # res.headers["Access-Control-Allow-Origin"] = "*"
@@ -310,13 +317,14 @@ def predict():
 
         # 분류 결과 확인 및 클라이언트에게 결과 반환
         class_name = get_prediction(image_bytes=image_bytes)
-        print("결과:", {'class_name': class_name})
         return jsonify({'class_name': class_name})
+
+print("run with ngrok server")
 
 """* API를 개방할 수 있으며 실행할 때마다 서버의 주소가 변경됩니다.
 * 서버 주소를 정확히 확인할 필요가 있습니다.
 """
-
+print("ngrok 시작!")
 run_with_ngrok(app)
 app.run()
 
@@ -347,9 +355,9 @@ app = Flask (__name__)
 def hello_world():
     return 'Hello, World!'
  
-if __name__ == "__main__":
-    app.run()
+# if __name__ == "__main__":
+#     app.run(host='0.0.0.0', port=80)
 
 run_with_ngrok(app)
-app.run()
+app.run(host='0.0.0.0', port=80)
 

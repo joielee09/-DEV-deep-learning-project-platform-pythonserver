@@ -40,7 +40,7 @@ matplotlib.font_manager._rebuild()
 
 import os
 import shutil
-from bing_image_downloader.bing_image_downloader import downloader
+# from bing_image_downloader.bing_image_downloader import downloader
 
 
 directory_list = [
