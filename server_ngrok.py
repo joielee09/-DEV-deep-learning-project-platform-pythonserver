@@ -63,10 +63,10 @@ def dataset_split(query, train_cnt):
     cnt = 0
     for file_name in os.listdir(query):
         if cnt < train_cnt:
-            print(f'[Train Dataset] {file_name}')
+            # print(f'[Train Dataset] {file_name}')
             shutil.move(query + '/' + file_name, './custom_dataset/train/' + query + '/' + file_name)
         else:
-            print(f'[Test Dataset] {file_name}')
+            # print(f'[Test Dataset] {file_name}')
             shutil.move(query + '/' + file_name, './custom_dataset/test/' + query + '/' + file_name)
         cnt += 1
     shutil.rmtree(query)
@@ -134,11 +134,11 @@ test_datasets = datasets.ImageFolder(os.path.join(data_dir, 'test'), transforms_
 train_dataloader = torch.utils.data.DataLoader(train_datasets, batch_size=4, shuffle=True, num_workers=4)
 test_dataloader = torch.utils.data.DataLoader(test_datasets, batch_size=4, shuffle=True, num_workers=4)
 
-print('학습 데이터셋 크기:', len(train_datasets))
-print('테스트 데이터셋 크기:', len(test_datasets))
+# print('학습 데이터셋 크기:', len(train_datasets))
+# print('테스트 데이터셋 크기:', len(test_datasets))
 
 class_names = train_datasets.classes
-print('클래스:', class_names)
+# print('클래스:', class_names)
 
 """* 간단히 이미지를 시각화해 봅시다."""
 
@@ -208,7 +208,7 @@ for epoch in range(num_epochs):
     epoch_acc = running_corrects / len(train_datasets) * 100.
 
     # 학습 과정 중에 결과 출력
-    print('#{} Loss: {:.4f} Acc: {:.4f}% Time: {:.4f}s'.format(epoch, epoch_loss, epoch_acc, time.time() - start_time))
+    # print('#{} Loss: {:.4f} Acc: {:.4f}% Time: {:.4f}s'.format(epoch, epoch_loss, epoch_acc, time.time() - start_time))
 
 """* 학습된 모델을 평가합니다."""
 
@@ -231,12 +231,12 @@ with torch.no_grad():
         running_corrects += torch.sum(preds == labels.data)
 
         # 한 배치의 첫 번째 이미지에 대하여 결과 시각화
-        print(f'[예측 결과: {class_names[preds[0]]}] (실제 정답: {class_names[labels.data[0]]})')
+        # print(f'[예측 결과: {class_names[preds[0]]}] (실제 정답: {class_names[labels.data[0]]})')
         imshow(inputs.cpu().data[0], title='예측 결과: ' + class_names[preds[0]])
 
     epoch_loss = running_loss / len(test_datasets)
     epoch_acc = running_corrects / len(test_datasets) * 100.
-    print('[Test Phase] Loss: {:.4f} Acc: {:.4f}% Time: {:.4f}s'.format(epoch_loss, epoch_acc, time.time() - start_time))
+    # print('[Test Phase] Loss: {:.4f} Acc: {:.4f}% Time: {:.4f}s'.format(epoch_loss, epoch_acc, time.time() - start_time))
 
 """#### <b>3. 분류 모델 API 개발</b>
 
@@ -278,7 +278,7 @@ def get_prediction(image_bytes):
     
     image = Image.open(io.BytesIO(image_bytes))
     image = transforms_test(image).unsqueeze(0).to(device)
-    print("image reached: ", image)
+    # print("image reached: ", image)
     
     with torch.no_grad():
         outputs = model(image)
@@ -290,19 +290,19 @@ def get_prediction(image_bytes):
 
 @app.route('/', methods=['POST'])
 def predict():
-    print("started predicting", request)
+    # print("started predicting", request)
     # res.headers["Access-Control-Allow-Origin"] = "*"
     if request.method == 'POST':
-        print("get post req", request)
+        # print("get post req", request)
         # 이미지 바이트 데이터 받아오기
         file = request.files['file']
         image_bytes = file.read()
-        print("file: ",file)
-        print("image_bytes: ", image_bytes)
+        # print("file: ",file)
+        # print("image_bytes: ", image_bytes)
 
         # 분류 결과 확인 및 클라이언트에게 결과 반환
         class_name = get_prediction(image_bytes=image_bytes)
-        print("결과:", {'class_name': class_name})
+        # print("결과:", {'class_name': class_name})
         return jsonify({'class_name': class_name})
 
 """* API를 개방할 수 있으며 실행할 때마다 서버의 주소가 변경됩니다.
