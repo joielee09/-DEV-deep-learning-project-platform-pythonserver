@@ -21,7 +21,7 @@ Original file is located at
 """
 
 # 한글 폰트 설치하기 (꼭! 설치가 완료되면 [런타임 다시 시작]을 누르고 다시 실행하기)
-!apt install fonts-nanum -y
+# !apt install fonts-nanum -y
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -66,10 +66,10 @@ def dataset_split(query, train_cnt):
     cnt = 0
     for file_name in os.listdir(query):
         if cnt < train_cnt:
-            print(f'[Train Dataset] {file_name}')
+            # print(f'[Train Dataset] {file_name}')
             shutil.move(query + '/' + file_name, './custom_dataset/train/' + query + '/' + file_name)
         else:
-            print(f'[Test Dataset] {file_name}')
+            # print(f'[Test Dataset] {file_name}')
             shutil.move(query + '/' + file_name, './custom_dataset/test/' + query + '/' + file_name)
         cnt += 1
     shutil.rmtree(query)
@@ -180,12 +180,14 @@ optimizer = optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
 
 """* 학습을 진행합니다."""
 
+print("학습을 진행합니다.")
 num_epochs = 50
 model.train()
 start_time = time.time()
 
 # 전체 반복(epoch) 수 만큼 반복하며
 for epoch in range(num_epochs):
+    print("epoch: ", epoch)
     running_loss = 0.
     running_corrects = 0
 
@@ -234,7 +236,7 @@ with torch.no_grad():
         running_corrects += torch.sum(preds == labels.data)
 
         # 한 배치의 첫 번째 이미지에 대하여 결과 시각화
-        print(f'[예측 결과: {class_names[preds[0]]}] (실제 정답: {class_names[labels.data[0]]})')
+        # print(f'[예측 결과: {class_names[preds[0]]}] (실제 정답: {class_names[labels.data[0]]})')
         imshow(inputs.cpu().data[0], title='예측 결과: ' + class_names[preds[0]])
 
     epoch_loss = running_loss / len(test_datasets)
