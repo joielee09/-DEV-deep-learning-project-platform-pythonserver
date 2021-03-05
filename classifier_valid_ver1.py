@@ -41,6 +41,7 @@ matplotlib.font_manager._rebuild()
 * 수집한 이미지를 저장하기 위한 폴더를 생성하고, 필요한 함수를 정의합니다.
 """
 
+print('이미지 크롤링을 활용한 학습 이미지 수집')
 import os
 import shutil
 from bing_image_downloader.bing_image_downloader import downloader
@@ -76,18 +77,21 @@ def dataset_split(query, train_cnt):
 
 """* <b>마동석</b> 이미지 크롤링을 진행하고 데이터셋을 구축합니다."""
 
+print('마동석 이미지 크롤링을 진행하고 데이터셋을 구축합니다.')
 query = '마동석'
 downloader.download(query, limit=40,  output_dir='./', adult_filter_off=True, force_replace=False, timeout=60)
-dataset_split(query, 50)
+dataset_split(query, 30)
 
 """* <b>김종국</b> 이미지 크롤링을 진행하고 데이터셋을 구축합니다."""
 
+print('김종국 이미지 크롤링을 진행하고 데이터셋을 구축합니다.')
 query = '김종국'
 downloader.download(query, limit=40,  output_dir='./', adult_filter_off=True, force_replace=False, timeout=60)
-dataset_split(query, 50)
+dataset_split(query, 30)
 
 """* <b>이병헌</b> 이미지 크롤링을 진행하고 데이터셋을 구축합니다."""
 
+print('이병헌 이미지 크롤링을 진행하고 데이터셋을 구축합니다.')
 query = '이병헌'
 downloader.download(query, limit=40,  output_dir='./', adult_filter_off=True, force_replace=False, timeout=60)
 dataset_split(query, 50)
@@ -101,6 +105,7 @@ dataset_split(query, 50)
 * 학습을 위해 필요한 라이브러리를 불러옵니다.
 """
 
+print('학습을 위해 필요한 라이브러리를 불러옵니다.')
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -116,7 +121,7 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu") # device
 
 """* 데이터셋을 불러옵니다."""
 
-# 데이터셋을 불러올 때 사용할 변형(transformation) 객체 정의
+print('데이터셋을 불러올 때 사용할 변형(transformation) 객체 정의')
 transforms_train = transforms.Compose([
     transforms.Resize((224, 224)),
     transforms.RandomHorizontalFlip(), # 데이터 증진(augmentation)
