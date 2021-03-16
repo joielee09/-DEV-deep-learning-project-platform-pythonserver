@@ -30,7 +30,7 @@ transforms_test = transforms.Compose([
     transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
 ])
 
-data_dir = 'imageClassification\custom_dataset'
+data_dir = './imageClassification/custom_dataset'
 train_datasets = datasets.ImageFolder(os.path.join(data_dir, 'train'), transforms_train)
 test_datasets = datasets.ImageFolder(os.path.join(data_dir, 'test'), transforms_test)
 
@@ -81,7 +81,7 @@ optimizer = optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
 """* 학습을 진행합니다."""
 
 print("학습을 진행합니다.")
-num_epochs = 50
+num_epochs = 1
 model.train()
 start_time = time.time()
 
@@ -156,7 +156,7 @@ import base64
 
 
 # 이미지를 읽어 결과를 반환하는 함수
-def predict(image):
+def imagepredict(image):
     with torch.no_grad():
         outputs = model(image)
         _, preds = torch.max(outputs, 1)

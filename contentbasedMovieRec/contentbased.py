@@ -216,7 +216,7 @@ def movie_poster(titles):
 
 
 # 이미지를 읽어 결과를 반환하는 함수
-def predict(title):
+def moviepredict(title):
     rec2 = get_recommend_movie_list(df_movies, movie_title=title)
     rec2 = rec2['title'].apply(lambda x : x.split(' (')[0])
     return rec2.to_json(orient="split")
