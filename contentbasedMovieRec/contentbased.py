@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+# Copyright permitted
+
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -9,31 +11,15 @@ from sklearn.metrics import mean_squared_error
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
-
 import os, sys 
 
 
-# 데이터셋 불러오기(MovieLens 100k)
 df_ratings = pd.read_csv('./contentbasedMovieRec/ratings.csv')
-
-# 평점 데이터셋 형태 확인
-print("### Rating Dataset Format ###", end='\n\n')
-print(df_ratings.head(), end='\n\n\n')
 df_ratings.drop(['timestamp'], axis=1, inplace=True)
 
 
 df_movies = pd.read_csv('./contentbasedMovieRec/movies.csv')
 
-# 영화 데이터셋 형태 확인
-print("### Movie Dataset Format ###", end = '\n\n')
-print("Columns of Movie Dataset : ",df_movies.columns, end = '\n\n')
-print(df_movies.head())
-
-### Add Your Own Data ### 
-# 모든 영화를 같은 평점을 주지 않도록 주의 #
-
-###################################### Example #################################################
-# User 800 is a HUGE fan of Harry Potter
 rows = []                               # row = [user_id, movie_id, rating]
 user_id = 800
 rows.append([user_id, 1, 4])        # movie     1: Toy Story(1995)
@@ -42,23 +28,12 @@ rows.append([user_id, 5816, 5])     # movie  5896: Harry Potter and the Chamber 
 rows.append([user_id, 69844, 5])    # movie 69844: Harry Potter and the Half-Blood Prince(2009)
 rows.append([user_id, 12, 1])       # movie    12: Dracula: Dead and Loving It(1995)
 rows.append([user_id, 177, 1])      # movie   177: Lord of Illusions(1995)
-##################################################################################################
-########################### Add Your Own Ratings using 'movie.csv' data #########################
-# my_rows = []
-# my_id = 2021
-# rows.append([user_id, ,])       # Fill your movie id and rating     
-# rows.append([user_id, ,])       # 여러분이 평가할 영화의 id와 점수를 입력하세요.
-# rows.append([user_id, ,])
 
-##################################################################################################
 for row in rows:
     df_ratings = df_ratings.append(pd.Series(row, index=df_ratings.columns), ignore_index=True)
-# print("df_ratings: ", df_ratings)
 
-# Dataset의 User, Movie 수 확인
 n_users = df_ratings.userId.unique().shape[0]
 n_items = df_ratings.movieId.unique().shape[0]
-# print("num users: {}, num items:{}".format(n_users, n_items))
 
 movie_rate = dict()
 
@@ -66,18 +41,15 @@ for row in df_ratings.itertuples(index = False):
     user_id, movie_id, rate = row
     if movie_id not in movie_rate:
         movie_rate[movie_id] = [0, 0]
-    # movie_rate[movie_id][0] += rate
     movie_rate[movie_id][1] += 1
 
 for key, value in movie_rate.items():
     value1 = value[0] / value[1]
     movie_rate[key] = [round(value1, 3),value[1]]
 
-# 데이터 전처리 
-# user id, movie id의 범위를 (0 ~ 사용자 수 -1), (0 ~ 영화 수 -1) 사이로 맞춰줌.
 
-user_dict = dict()      # {user_id : user_idx}, user_id : original data에서 부여된 user의 id, user_idx : 새로 부여할 user의 id
-movie_dict = dict()     # {movie_id: movie_idx}, movie_id : original data에서 부여된 movie의 id, movie_idx: 새로 부여할 movie의 id
+user_dict = dict()
+movie_dict = dict()
 user_idx = 0
 movie_idx = 0
 ratings = np.zeros((n_users, n_items))
@@ -96,7 +68,7 @@ movie_idx_to_name=dict()
 movie_idx_to_genre=dict()
 for row in df_movies.itertuples(index=False):
     movie_id, movie_name, movie_genre = row
-    if movie_id not in movie_dict:              # 어떤 영화가 rating data에 없는 경우 skip
+    if movie_id not in movie_dict:
         continue
     movie_idx_to_name[movie_dict[movie_id]] = movie_name 
     movie_idx_to_genre[movie_dict[movie_id]] = movie_genre
@@ -136,9 +108,6 @@ df_movies.head()
 
 C = df_movies['score'].mean()
 
-# print(C)
-# print(m)
-
 def weighted_rating(x, m=m, C=C):
     v = x['count']
     R = x['score']
@@ -146,7 +115,6 @@ def weighted_rating(x, m=m, C=C):
     return ( v / (v+m) * R ) + (m / (m + v) * C)
 
 df_movies['weighted_score'] = df_movies.apply(weighted_rating, axis = 1)
-
 df_movies.head(4)
 
 count_vector = CountVectorizer(ngram_range=(1, 3))
@@ -157,21 +125,14 @@ c_vector_genres
 
 c_vector_genres.shape
 
-#코사인 유사도를 구한 벡터를 미리 저장
 gerne_c_sim = cosine_similarity(c_vector_genres, c_vector_genres).argsort()[:, ::-1]
 
 gerne_c_sim.shape
 
 def get_recommend_movie_list(df, movie_title, top=30):
-    # 특정 영화와 비슷한 영화를 추천해야 하기 때문에 '특정 영화' 정보를 뽑아낸다.
     target_movie_index = df[df['title'] == movie_title].index.values
-    
-    #코사인 유사도 중 비슷한 코사인 유사도를 가진 정보를 뽑아낸다.
     sim_index = gerne_c_sim[target_movie_index, :top].reshape(-1)
-    #본인을 제외
     sim_index = sim_index[sim_index != target_movie_index]
-
-    #data frame으로 만들고 vote_count으로 정렬한 뒤 return
     result = df.iloc[sim_index].sort_values('weighted_score', ascending=False)[:20]
     return result
 
@@ -210,12 +171,6 @@ def movie_poster(titles):
         
     plt.show()
 
-# rec2 = get_recommend_movie_list(df_movies, movie_title='Moana (2016)')
-# rec2 = rec2['title'].apply(lambda x : x.split(' (')[0])
-# movie_poster(list(rec2))
-
-
-# 이미지를 읽어 결과를 반환하는 함수
 def moviepredict(title):
     rec2 = get_recommend_movie_list(df_movies, movie_title=title)
     rec2 = rec2['title'].apply(lambda x : x.split(' (')[0])

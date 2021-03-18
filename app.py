@@ -1,15 +1,14 @@
 import io
-# from flask_ngrok import run_with_ngrok
 from flask import Flask, jsonify, request
 from PIL import Image
 from flask_cors import CORS, cross_origin
 import os
 import json
 import base64
+import sys
 
 
 # import modules
-import sys
 # computer vision
 from imageClassification import classifier
 # recommendation system
@@ -53,7 +52,6 @@ def contentbasedMovieRec():
   year=content['year']
   input = title+' ('+year+')'
   print("input", input)
-  #processing title
   if request.method == 'POST':
     res = contentbased.moviepredict(input)
     print("result:", res)
