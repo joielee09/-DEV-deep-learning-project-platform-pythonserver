@@ -110,8 +110,6 @@ with torch.no_grad():
     print("epoch: ", epoch_loss, epoch_acc )
 
 
-
-
 def imagepredict(image):
     with torch.no_grad():
         outputs = model(image)
