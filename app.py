@@ -13,7 +13,8 @@ import sys
 from imageClassification import classifier
 # recommendation system
 from contentbasedMovieRec import contentbased
-
+# style transfer
+from styletransfer import transfer
 
 app = Flask(__name__)
 CORS(app)
@@ -47,15 +48,31 @@ def imagefunc():
 @app.route("/contentbasedMovieRec", methods=['POST'])
 def contentbasedMovieRec():
   content = request.get_json(force=True, silent=True)
-  print("title:", content['title'])
   title=content['title']
   year=content['year']
   input = title+' ('+year+')'
-  print("input", input)
   if request.method == 'POST':
     res = contentbased.moviepredict(input)
     print("result:", res)
     return jsonify(res)
+
+import base64
+
+@app.route("/styletransfer", methods=['POST'])
+def styleTransfer():
+    content = request.get_json(force=True, silent=True)
+    print("content: ", content)
+    print("images", content['image1'], content['image2'])
+    img1 = content['image1']
+    img2 = content['image2']
+    if request.method == 'POST':
+        transfer.transfer(img1, img2)
+        data={}
+        with open('/root/tmp/deep-learning-project-platform-pythonserver/output123.png', mode='rb') as image_file:
+           img_ = image_file.read()
+        data['img_'] = base64.encodebytes(img_).decode('utf-8')
+        return jsonify(data)
+
 
 
 if (__name__) == "__main__":

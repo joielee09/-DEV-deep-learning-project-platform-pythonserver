@@ -14,6 +14,14 @@ import numpy as np
 import time
 import os
 
+import io
+# from flask_ngrok import run_with_ngrok
+from flask import Flask, jsonify, request
+# import wget
+# from PIL import Image
+from flask_cors import CORS, cross_origin
+import base64
+
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 transforms_train = transforms.Compose([
@@ -100,13 +108,6 @@ with torch.no_grad():
     epoch_loss = running_loss / len(test_datasets)
     epoch_acc = running_corrects / len(test_datasets) * 100.
     print("epoch: ", epoch_loss, epoch_acc )
-
-import io
-from flask import Flask, jsonify, request
-from PIL import Image
-from flask_cors import CORS, cross_origin
-import os
-import base64
 
 
 def imagepredict(image):
