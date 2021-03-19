@@ -36,7 +36,7 @@ def imagefunc():
     with open(filename, 'wb') as f:
       f.write(imgdata)
     image = Image.open('local_image.jpg')
-    image = transforms_test(image).unsqueeze(0).to(device)
+    image = classifier.transforms_test(image).unsqueeze(0).to(classifier.device)
 
     class_name= classifier.imagepredict(image)
     print("result:", {'class_name': class_name})

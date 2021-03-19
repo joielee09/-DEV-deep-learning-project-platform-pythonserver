@@ -102,9 +102,7 @@ with torch.no_grad():
     print("epoch: ", epoch_loss, epoch_acc )
 
 import io
-from flask_ngrok import run_with_ngrok
 from flask import Flask, jsonify, request
-import wget
 from PIL import Image
 from flask_cors import CORS, cross_origin
 import os
