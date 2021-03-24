@@ -112,5 +112,3 @@ def imagefunc():
 ```
 
 `from imageClassification.predict import image_predict` 라인이 실행되면서 모델의 `weight`이 저장되어있는지 체크를 한 후 학습이 진행된다고 이해하면 됩니다. (위에서 설명한 것)
-
-> 여기까지 구현하셨으면 Front 부분은 멋진 개발자님이 척척 구현해주실 겁니다.
